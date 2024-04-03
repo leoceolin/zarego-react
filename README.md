@@ -2,6 +2,8 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+You can access the final project using this URL: https://master.dlag3g5t9vbjs.amplifyapp.com/
+
 ## Available Scripts
 
 In the project directory, you can run:
