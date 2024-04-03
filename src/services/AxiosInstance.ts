@@ -6,8 +6,7 @@ const AxiosInstance = axios.create({
   },
 });
 
-// AxiosInstance.defaults.baseURL = `https://backend-zarego-production.up.railway.app/`;
-AxiosInstance.defaults.baseURL = `http://localhost:3333/`;
+AxiosInstance.defaults.baseURL = `https://backend-zarego-production.up.railway.app/`;
 
 AxiosInstance.interceptors.response.use(
   (response: AxiosResponse) => response,
