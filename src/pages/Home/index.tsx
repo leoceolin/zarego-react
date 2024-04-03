@@ -10,13 +10,10 @@ import {
   Button,
 } from '@mui/material'
 import DownloadIcon from '@mui/icons-material/Download'
-import { useInfiniteQuery } from 'react-query'
 import { Country } from '../../types/country'
 import { TableComponent } from '../../components/Table'
-import { fetchCountries, handleGeneratePdf } from './useHome'
-
-const QUERY_KEY = 'getCountryInformation'
-
+import { handleGeneratePdf } from './useHome'
+import useFetchCountries from './useFetchCountries'
 interface Countries extends Country {
   selected: boolean
 }
@@ -30,14 +27,7 @@ export function Home() {
   const [countriesSelected, setCountriesSelected] = useState<Countries[]>([])
 
   const { data, hasNextPage, isFetching, isLoading, fetchNextPage } =
-    useInfiniteQuery({
-      queryKey: [QUERY_KEY],
-      queryFn: ({ pageParam }) => fetchCountries({ pageParam }),
-      getNextPageParam: (lastPage, allPages) => {
-        return lastPage.length ? allPages.length + 1 : undefined
-      },
-      refetchInterval: 60 * 60 * 24,
-    })
+    useFetchCountries()
 
   const lastElementRef = useCallback(
     (node: HTMLDivElement) => {
