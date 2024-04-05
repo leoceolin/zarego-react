@@ -12,5 +12,5 @@ export const getCountries = async (
   rows: number = 10
 ): Promise<AxiosResponse<IResponseGetCountries>> => {
 
-  return AxiosInstance.get(`getCountryInformation?page=${page}&rows=${rows}`);
+  return AxiosInstance.get(`/getCountryInformation?page=${page}&rows=${rows}`);
 };

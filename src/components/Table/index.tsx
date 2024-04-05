@@ -28,7 +28,11 @@ interface ITable {
 }
 export function TableComponent({ countriesSelected }: ITable) {
   return (
-    <TableContainer component={Paper} sx={{ border: '1px solid black' }}>
+    <TableContainer
+      data-testid="tableContainer"
+      component={Paper}
+      sx={{ border: '1px solid black' }}
+    >
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead sx={{ background: 'black' }}>
           <TableRow>
@@ -50,7 +54,7 @@ export function TableComponent({ countriesSelected }: ITable) {
         </TableHead>
         <TableBody>
           {countriesSelected.map((el) => (
-            <TableRow key={el.id}>
+            <TableRow data-testid="tableRow" key={el.id}>
               <TableCellCustom>{el.CountryName}</TableCellCustom>
               <TableCellCustom>{el.PerformanceOriented}</TableCellCustom>
               <TableCellCustom>{el.Autocratic}</TableCellCustom>

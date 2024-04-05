@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Stack,
   Typography,
@@ -22,8 +22,6 @@ export function Home() {
   const tableDivRef = useRef(null)
 
   const observer = useRef<IntersectionObserver>()
-  const [countryId, setCountryId] = useState('')
-  const [allCountries, setAllCountries] = useState<Countries[]>([])
   const [countriesSelected, setCountriesSelected] = useState<Countries[]>([])
 
   const { data, hasNextPage, isFetching, isLoading, fetchNextPage } =
@@ -46,44 +44,22 @@ export function Home() {
     [hasNextPage, isFetching, isLoading, fetchNextPage],
   )
 
-  const handleSelectCountry = (countryIdParam: string) => {
-    setCountryId(countryIdParam)
-    setAllCountries(
-      allCountries.map((item) =>
-        item.id === countryIdParam
-          ? { ...item, selected: !item.selected }
-          : item,
-      ),
+  const handleSelectCountry = (countryParam: Countries) => {
+    const checkIfCountryIsSelected = countriesSelected.some(
+      (elem) => elem.id === countryParam.id,
     )
+
+    if (checkIfCountryIsSelected) {
+      const filteredCountries = countriesSelected.filter(
+        (item) => item.id !== countryParam.id,
+      )
+
+      setCountriesSelected(filteredCountries)
+    } else {
+      const countryToAdd = [...new Set([...countriesSelected, countryParam])]
+      setCountriesSelected(countryToAdd)
+    }
   }
-
-  const countries = useMemo(() => {
-    return data?.pages.reduce((_, page) => {
-      return [...allCountries, ...page]
-    }, [])
-  }, [data])
-
-  useEffect(() => {
-    if (countries) {
-      setAllCountries(countries)
-    }
-  }, [countries])
-
-  useEffect(() => {
-    if (countryId) {
-      allCountries.forEach((item) => {
-        if (item.id === countryId && item.selected) {
-          const countryToAdd = [...new Set([...countriesSelected, item])]
-          setCountriesSelected(countryToAdd)
-        } else if (item.id === countryId) {
-          const countryToRemove = countriesSelected.filter(
-            (item) => item.id !== countryId,
-          )
-          setCountriesSelected(countryToRemove)
-        }
-      })
-    }
-  }, [allCountries, countryId])
 
   return (
     <Stack>
@@ -99,31 +75,40 @@ export function Home() {
             Choose country
           </Typography>
           {isLoading ? (
-            <CircularProgress />
+            <div data-testid="loading">
+              <CircularProgress />
+            </div>
           ) : (
             <List
               sx={{
                 maxHeight: '350px',
                 overflowY: 'scroll',
               }}
+              data-testid="countriesList"
             >
-              {allCountries?.map((el) => (
-                <div key={el.id} ref={lastElementRef}>
-                  <ListItem disablePadding>
-                    <ListItemButton
-                      onClick={() => {
-                        handleSelectCountry(el.id)
-                      }}
-                      sx={{
-                        border: '1px solid black',
-                        background: el.selected ? '#ADD8E6' : 'white',
-                      }}
-                    >
-                      <ListItemText primary={el.CountryName} />
-                    </ListItemButton>
-                  </ListItem>
-                </div>
-              ))}
+              {data?.pages.map((dataPage) => {
+                return dataPage.map((el) => {
+                  return (
+                    <div key={el.id} ref={lastElementRef}>
+                      <ListItem disablePadding>
+                        <ListItemButton
+                          data-testid="countryItemList"
+                          onClick={() => {
+                            handleSelectCountry(el)
+                            el.selected = !el.selected
+                          }}
+                          sx={{
+                            border: '1px solid black',
+                            background: el.selected ? '#ADD8E6' : 'white',
+                          }}
+                        >
+                          <ListItemText primary={el.CountryName} />
+                        </ListItemButton>
+                      </ListItem>
+                    </div>
+                  )
+                })
+              })}
             </List>
           )}
         </Stack>
@@ -131,12 +116,14 @@ export function Home() {
           <Typography variant="h4" textAlign="center">
             Data
           </Typography>
-          {countriesSelected.length ? (
+          {countriesSelected?.length ? (
             <Stack ref={tableDivRef}>
               <TableComponent countriesSelected={countriesSelected} />
             </Stack>
           ) : (
-            <Typography>Choose at least one country to show data</Typography>
+            <Typography data-testid="chooseCountryMessage">
+              Choose at least one country to show data
+            </Typography>
           )}
         </Stack>
       </Stack>

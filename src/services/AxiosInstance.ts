@@ -1,13 +1,12 @@
 import axios, { AxiosError, AxiosResponse, } from 'axios';
 
 const AxiosInstance = axios.create({
+  baseURL: 'http://localhost:3333',
+  // baseURL: 'https://backend-zarego-production.up.railway.app',
   headers: {
     "Content-type": "application/json",
   },
 });
-
-// AxiosInstance.defaults.baseURL = `https://backend-zarego-production.up.railway.app/`;
-AxiosInstance.defaults.baseURL = `http://localhost:3333/`;
 
 AxiosInstance.interceptors.response.use(
   (response: AxiosResponse) => response,
