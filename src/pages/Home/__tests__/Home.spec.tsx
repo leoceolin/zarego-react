@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom'
 import 'jest-canvas-mock'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { Home } from '..'
 import { mockedCountries } from '../../../mocks/mockData'
 import useFetchCountries from '../useFetchCountries'
