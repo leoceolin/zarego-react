@@ -3,14 +3,9 @@ import { mockedCountries } from "./mockData";
 
 export const requestMockGetCountries = (pageParam: number = 1, rowsParam: number = 10) => {
   return axiosMockAdapterInstance
-    .onGet('/getCountryInformation', {
-      params: {
-        page: pageParam,
-        rows: rowsParam
-      },
-    })
+    .onGet(`/getCountryInformation?page=${pageParam}&rows=${rowsParam}`)
     .reply(() => [
       200,
-      { countries: mockedCountries, total_registers: mockedCountries.length, success: true },
+      { countries: mockedCountries, total_registers: mockedCountries.length },
     ]);
 };

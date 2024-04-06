@@ -1,14 +1,20 @@
 import '@testing-library/jest-dom'
+import 'jest-canvas-mock'
 import { QueryClient, QueryClientProvider } from 'react-query'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { Home } from '..'
-import { requestMockGetCountries } from './mockGetCountries'
-import { mockedCountries } from './mockData'
+import { mockedCountries } from '../../../mocks/mockData'
 import useFetchCountries from '../useFetchCountries'
+import { handleGeneratePdf } from '../useHome'
 
 const queryClient = new QueryClient()
 const mockedQuery = useFetchCountries as jest.Mock<any>
+const mockedUseHome = handleGeneratePdf as jest.Mock<any>
+
 jest.mock('../useFetchCountries')
+jest.mock('../useHome')
+
+const mockIntersectionObserver = jest.fn()
 
 describe('Home', () => {
   function createComponent() {
@@ -19,15 +25,30 @@ describe('Home', () => {
     )
   }
 
-  beforeAll(() => {
-    requestMockGetCountries(1, 10)
-    const mockIntersectionObserver = jest.fn()
+  beforeEach(() => {
     mockIntersectionObserver.mockReturnValue({
       observe: () => null,
       unobserve: () => null,
       disconnect: () => null,
     })
     window.IntersectionObserver = mockIntersectionObserver
+
+    mockedQuery.mockImplementation(() => ({
+      status: 'success',
+      data: {
+        pages: [mockedCountries],
+      },
+      hasNextPage: true,
+      isFetching: false,
+      isLoading: false,
+    }))
+  })
+
+  it('Should call function to generate PDF', () => {
+    render(<Home />)
+    const downloadButton = screen.getByTestId('downloadPDFButton')
+    fireEvent.click(downloadButton)
+    expect(mockedUseHome).toHaveBeenCalled()
   })
 
   it('Should render loading component when query is fetching api data', async () => {
@@ -43,13 +64,6 @@ describe('Home', () => {
   })
 
   it('Should render list component after query finish fetch api data', async () => {
-    mockedQuery.mockImplementation(() => ({
-      status: 'success',
-      data: {
-        pages: [mockedCountries],
-      },
-    }))
-
     render(createComponent())
 
     const listCountriesComponent = screen.getByTestId('countriesList')
@@ -65,13 +79,6 @@ describe('Home', () => {
   })
 
   it('Should render country table after user select country', async () => {
-    mockedQuery.mockImplementation(() => ({
-      status: 'success',
-      data: {
-        pages: [mockedCountries],
-      },
-    }))
-
     render(createComponent())
 
     const countriesItemList = screen.getAllByTestId('countryItemList')
@@ -82,16 +89,11 @@ describe('Home', () => {
 
     const tableRows = screen.getAllByTestId('tableRow')
     expect(tableRows.length).toBe(1)
+
+    expect(countriesItemList[0]).toHaveStyle('background: #ADD8E6')
   })
 
   it('Should remove country from table after user select country to be removed', async () => {
-    mockedQuery.mockImplementation(() => ({
-      status: 'success',
-      data: {
-        pages: [mockedCountries],
-      },
-    }))
-
     render(createComponent())
 
     const countriesItemList = screen.getAllByTestId('countryItemList')

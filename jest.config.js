@@ -5,4 +5,5 @@ module.exports = {
     '^.+\\.(js|jsx)$': 'babel-jest',
   },
   testEnvironment: 'jsdom',
+  setupFiles: ['jest-canvas-mock'],
 }

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import {
   Stack,
   Typography,
@@ -39,7 +39,9 @@ export function Home() {
         }
       })
 
-      if (node) observer.current.observe(node)
+      if (node) {
+        observer.current.observe(node)
+      }
     },
     [hasNextPage, isFetching, isLoading, fetchNextPage],
   )
@@ -89,7 +91,11 @@ export function Home() {
               {data?.pages.map((dataPage) => {
                 return dataPage.map((el) => {
                   return (
-                    <div key={el.id} ref={lastElementRef}>
+                    <div
+                      data-testid="intersectionObserver"
+                      key={el.id}
+                      ref={lastElementRef}
+                    >
                       <ListItem disablePadding>
                         <ListItemButton
                           data-testid="countryItemList"
@@ -134,6 +140,7 @@ export function Home() {
       >
         <Stack alignItems="center">
           <Button
+            data-testid="downloadPDFButton"
             onClick={() => {
               handleGeneratePdf(tableDivRef)
             }}
